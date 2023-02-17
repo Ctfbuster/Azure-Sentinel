@@ -1,7 +1,7 @@
 Parser:
   Title: Network Session ASIM filtering parser for AWS VPC logs
-  Version: '0.1'
-  LastUpdated: Feb 08, 2021
+  Version: '0.3'
+  LastUpdated: Dec 11, 2021
 Product:
   Name: AWS VPC
 Normalization:
@@ -227,7 +227,7 @@ ParserQuery: |
     | where(isnull(starttime) or TimeGenerated >= starttime)
       and (isnull(endtime)   or TimeGenerated <= endtime)
     | where not(disabled)
-    | where LogStatus != "NODATA"
+    | where LogStatus == "OK"
     // -- Pre-filtering:
     | where
            (isnull(dstportnumber) or (DstPort == dstportnumber))
@@ -287,5 +287,6 @@ ParserQuery: |
         Dvc = DvcId,
         EventStartTime = TimeGenerated,
         DvcInterface = DvcInboundInterface
+    | project-away Action, AzId, Bytes, FlowDirection, InstanceId, Packets, Protocol, Region, SourceSystem, SublocationId, SublocationType, SubnetId, TcpFlags, TenantId, TrafficPath, Version
     };
     parser (starttime, endtime, srcipaddr_has_any_prefix, dstipaddr_has_any_prefix, ipaddr_has_any_prefix,dstportnumber, hostname_has_any, dvcaction, eventresult, disabled)
